@@ -20,4 +20,19 @@ public class CalculatorController {
     public int add(@RequestParam("a") int a,@RequestParam("b") int b) {
         return calculatorService.add(a, b);
     }
+
+    @GetMapping("/subtract")
+    public int sub(@RequestParam("a") int a,@RequestParam("b") int b) {
+        return calculatorService.sub(a, b);
+    }
+
+    @GetMapping("/multiply")
+    public int multiply(@RequestParam("a") int a,@RequestParam("b") int b) {
+        return calculatorService.mul(a, b);
+    }
+
+    @GetMapping("/divide")
+    public int divide(@RequestParam("a") int a,@RequestParam("b") int b) {
+        return calculatorService.div(a, b);
+    }
 }
