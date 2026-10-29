@@ -21,6 +21,10 @@ RUN useradd --system --uid 10001 appuser
 
 COPY --from=build /app/target/*.jar app.jar
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
 USER 10001
 
 EXPOSE 8081
