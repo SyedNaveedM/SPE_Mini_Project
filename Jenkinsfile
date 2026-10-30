@@ -102,19 +102,20 @@ stage('Build Nginx Image') {
         stage('Verify Deployment') {
             steps {
                 sh '''
-                    for i in $(seq 1 30); do
-                        if curl -fsS \
-                            "http://host.docker.internal/actuator/health" \
-                            >/dev/null 2>&1; then
+                    echo "Checking Calculator API health..."
 
-                            echo "Health check passed"
+                    for i in $(seq 1 15); do
+                        if curl --connect-timeout 3 --max-time 5 \
+                            -fsS http://host.docker.internal/actuator/health; then
+                            echo "Health check passed!"
                             exit 0
                         fi
 
+                        echo "Attempt $i failed. Retrying..."
                         sleep 2
                     done
 
-                    echo "Health check failed"
+                    echo "Health check failed after 15 attempts."
                     exit 1
                 '''
             }
