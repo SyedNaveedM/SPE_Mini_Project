@@ -80,15 +80,11 @@ pipeline {
             }
         }
 
-
-stage('Build Nginx Image') {
-    steps {
-        sh '''
-            docker compose build nginx
-        '''
-    }
-}
-
+        stage('Build Nginx Image') {
+            steps {
+                sh 'docker compose build nginx'
+            }
+        }
 
         stage('Deploy with Docker Compose') {
             steps {
@@ -99,65 +95,48 @@ stage('Build Nginx Image') {
             }
         }
 
+        stage('Verify Deployment') {
+            steps {
+                sh '''
+                    echo "Checking Calculator API health..."
 
+                    for i in $(seq 1 15); do
+                        if curl --connect-timeout 3 --max-time 5 \
+                            -fsS http://host.docker.internal/actuator/health; then
+                            echo "Deployment verification successful!"
+                            exit 0
+                        fi
+
+                        echo "Attempt $i failed. Retrying..."
+                        sleep 2
+                    done
+
+                    echo "Deployment verification failed!"
+                    exit 1
+                '''
+            }
+        }
     }
 
+    post {
+        always {
+            sh 'docker logout || true'
+        }
 
-post {
-    always {
-        sh 'docker logout || true'
+        success {
+            emailext(
+                to: 'syednaveedmohammed@gmail.com',
+                subject: "SUCCESS: Calculator CI/CD #${BUILD_NUMBER}",
+                body: "Pipeline completed successfully.\nBuild: ${BUILD_NUMBER}\nURL: ${BUILD_URL}"
+            )
+        }
+
+        failure {
+            emailext(
+                to: 'syednaveedmohammed@gmail.com',
+                subject: "FAILURE: Calculator CI/CD #${BUILD_NUMBER}",
+                body: "Pipeline failed.\nBuild: ${BUILD_NUMBER}\nURL: ${BUILD_URL}\nConsole: ${BUILD_URL}console"
+            )
+        }
     }
-
-    success {
-        emailext(
-            to: 'syednaveedmohammed@gmail.com',
-            subject: "SUCCESS: Calculator CI/CD - Build #${BUILD_NUMBER}",
-            body: """
-Hello,
-
-Your Calculator CI/CD pipeline completed successfully.
-
-Build Number: ${BUILD_NUMBER}
-Status: SUCCESS
-Build URL: ${BUILD_URL}
-
-The Calculator API has been deployed successfully.
-
-Regards,
-Jenkins
-"""
-        )
-    }
-
-    failure {
-        emailext(
-            to: 'YOUR_EMAIL@gmail.com',
-            subject: "FAILURE: Calculator CI/CD - Build #${BUILD_NUMBER}",
-            body: """
-Hello,
-
-Your Calculator CI/CD pipeline has FAILED.
-
-Build Number: ${BUILD_NUMBER}
-Status: FAILURE
-Build URL: ${BUILD_URL}
-Console Output: ${BUILD_URL}console
-
-Please check the Jenkins console output.
-
-Regards,
-Jenkins
-"""
-        )
-    }
-
-    unstable {
-        emailext(
-            to: 'YOUR_EMAIL@gmail.com',
-            subject: "UNSTABLE: Calculator CI/CD - Build #${BUILD_NUMBER}",
-            body: "Build #${BUILD_NUMBER} is unstable. Check ${BUILD_URL}"
-        )
-    }
-}
-
 }
