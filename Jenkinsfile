@@ -120,42 +120,56 @@ pipeline {
         }
     }
 
+//    post {
+//        always {
+//            sh 'docker logout || true'
+//        }
+//
+//        success {
+//            emailext(
+//                to: 'syednaveedmohammed@gmail.com',
+//                subject: "SUCCESS: Calculator CI/CD - Build #${BUILD_NUMBER}",
+//                mimeType: 'text/plain',
+//                body: """
+//    Your Calculator CI/CD pipeline completed successfully!
+//
+//    Build Number: ${BUILD_NUMBER}
+//    Build URL: ${BUILD_URL}
+//
+//    All stages completed successfully.
+//    The application has been deployed using Docker Compose.
+//    """
+//            )
+//        }
+//
+//        failure {
+//            emailext(
+//                to: 'syednaveedmohammed@gmail.com',
+//                subject: "FAILURE: Calculator CI/CD - Build #${BUILD_NUMBER}",
+//                mimeType: 'text/plain',
+//                body: """
+//    Your Calculator CI/CD pipeline has FAILED.
+//
+//    Build Number: ${BUILD_NUMBER}
+//    Build URL: ${BUILD_URL}
+//
+//    Please check the Jenkins console output for details.
+//    """
+//            )
+//        }
+//    }
     post {
-        always {
-            sh 'docker logout || true'
-        }
-
         success {
-            emailext(
-                to: 'syednaveedmohammed@gmail.com',
-                subject: "SUCCESS: Calculator CI/CD - Build #${BUILD_NUMBER}",
-                mimeType: 'text/plain',
-                body: """
-    Your Calculator CI/CD pipeline completed successfully!
-
-    Build Number: ${BUILD_NUMBER}
-    Build URL: ${BUILD_URL}
-
-    All stages completed successfully.
-    The application has been deployed using Docker Compose.
-    """
-            )
+            echo 'Build passed'
+            mail to: 'syednaveedmohammed@gmail.com',
+                    subject: "Build PASSED: ${currentBuild.fullDisplayName}",
+                    body: "Result: ${currentBuild.currentResult}\nDetails: ${env.BUILD_URL}"
         }
-
         failure {
-            emailext(
-                to: 'syednaveedmohammed@gmail.com',
-                subject: "FAILURE: Calculator CI/CD - Build #${BUILD_NUMBER}",
-                mimeType: 'text/plain',
-                body: """
-    Your Calculator CI/CD pipeline has FAILED.
-
-    Build Number: ${BUILD_NUMBER}
-    Build URL: ${BUILD_URL}
-
-    Please check the Jenkins console output for details.
-    """
-            )
+            echo 'Build failed'
+            mail to: 'syednaveedmohammed@gmail.com',
+                    subject: "Build FAILED: ${currentBuild.fullDisplayName}",
+                    body: "Result: ${currentBuild.currentResult}\nDetails: ${env.BUILD_URL}"
         }
     }
 }
