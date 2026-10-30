@@ -80,6 +80,16 @@ pipeline {
             }
         }
 
+
+stage('Build Nginx Image') {
+    steps {
+        sh '''
+            docker compose build nginx
+        '''
+    }
+}
+
+
         stage('Deploy with Docker Compose') {
             steps {
                 sh '''
