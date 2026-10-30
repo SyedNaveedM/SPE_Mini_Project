@@ -99,20 +99,65 @@ stage('Build Nginx Image') {
             }
         }
 
-        
+
     }
 
-    post {
-        always {
-            sh 'docker logout || true'
-        }
 
-        success {
-            echo "Pipeline succeeded: build ${BUILD_NUMBER}"
-        }
-
-        failure {
-            echo "Pipeline failed: inspect the stage logs."
-        }
+post {
+    always {
+        sh 'docker logout || true'
     }
+
+    success {
+        emailext(
+            to: 'syednaveedmohammed@gmail.com',
+            subject: "SUCCESS: Calculator CI/CD - Build #${BUILD_NUMBER}",
+            body: """
+Hello,
+
+Your Calculator CI/CD pipeline completed successfully.
+
+Build Number: ${BUILD_NUMBER}
+Status: SUCCESS
+Build URL: ${BUILD_URL}
+
+The Calculator API has been deployed successfully.
+
+Regards,
+Jenkins
+"""
+        )
+    }
+
+    failure {
+        emailext(
+            to: 'YOUR_EMAIL@gmail.com',
+            subject: "FAILURE: Calculator CI/CD - Build #${BUILD_NUMBER}",
+            body: """
+Hello,
+
+Your Calculator CI/CD pipeline has FAILED.
+
+Build Number: ${BUILD_NUMBER}
+Status: FAILURE
+Build URL: ${BUILD_URL}
+Console Output: ${BUILD_URL}console
+
+Please check the Jenkins console output.
+
+Regards,
+Jenkins
+"""
+        )
+    }
+
+    unstable {
+        emailext(
+            to: 'YOUR_EMAIL@gmail.com',
+            subject: "UNSTABLE: Calculator CI/CD - Build #${BUILD_NUMBER}",
+            body: "Build #${BUILD_NUMBER} is unstable. Check ${BUILD_URL}"
+        )
+    }
+}
+
 }
