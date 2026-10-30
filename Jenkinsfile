@@ -98,11 +98,13 @@ pipeline {
         stage('Verify Deployment') {
             steps {
                 sh '''
-                    echo "Checking Calculator API health..."
+                    echo "Checking deployment health..."
 
                     for i in $(seq 1 15); do
-                        if curl --connect-timeout 3 --max-time 5 \
-                            -fsS http://host.docker.internal/actuator/health; then
+
+                        if docker exec mini_project-nginx-1 \
+                            wget -qO- http://127.0.0.1/actuator/health; then
+
                             echo "Deployment verification successful!"
                             exit 0
                         fi
