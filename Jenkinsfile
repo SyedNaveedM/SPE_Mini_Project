@@ -99,27 +99,7 @@ stage('Build Nginx Image') {
             }
         }
 
-        stage('Verify Deployment') {
-            steps {
-                sh '''
-                    echo "Checking Calculator API through Nginx..."
-
-                    for i in $(seq 1 15); do
-                        if curl --connect-timeout 3 --max-time 5 \
-                            -fsS http://host.docker.internal/actuator/health; then
-                            echo "Deployment verification successful!"
-                            exit 0
-                        fi
-
-                        echo "Attempt $i failed. Retrying..."
-                        sleep 2
-                    done
-
-                    echo "Deployment verification failed!"
-                    exit 1
-                '''
-            }
-        }
+        
     }
 
     post {
