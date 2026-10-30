@@ -128,16 +128,33 @@ pipeline {
         success {
             emailext(
                 to: 'syednaveedmohammed@gmail.com',
-                subject: "SUCCESS: Calculator CI/CD #${BUILD_NUMBER}",
-                body: "Pipeline completed successfully.\nBuild: ${BUILD_NUMBER}\nURL: ${BUILD_URL}"
+                subject: "SUCCESS: Calculator CI/CD - Build #${BUILD_NUMBER}",
+                mimeType: 'text/plain',
+                body: """
+    Your Calculator CI/CD pipeline completed successfully!
+
+    Build Number: ${BUILD_NUMBER}
+    Build URL: ${BUILD_URL}
+
+    All stages completed successfully.
+    The application has been deployed using Docker Compose.
+    """
             )
         }
 
         failure {
             emailext(
                 to: 'syednaveedmohammed@gmail.com',
-                subject: "FAILURE: Calculator CI/CD #${BUILD_NUMBER}",
-                body: "Pipeline failed.\nBuild: ${BUILD_NUMBER}\nURL: ${BUILD_URL}\nConsole: ${BUILD_URL}console"
+                subject: "FAILURE: Calculator CI/CD - Build #${BUILD_NUMBER}",
+                mimeType: 'text/plain',
+                body: """
+    Your Calculator CI/CD pipeline has FAILED.
+
+    Build Number: ${BUILD_NUMBER}
+    Build URL: ${BUILD_URL}
+
+    Please check the Jenkins console output for details.
+    """
             )
         }
     }
