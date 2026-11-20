@@ -161,13 +161,13 @@ pipeline {
     post {
         success {
             echo 'Build passed'
-            mail to: 'syednaveedmohammed@gmail.com',
+            mail to: 'syed.naveed@iiitb.ac.in',
                     subject: "Build PASSED: ${currentBuild.fullDisplayName}",
                     body: "Result: ${currentBuild.currentResult}\nDetails: ${env.BUILD_URL}"
         }
         failure {
             echo 'Build failed'
-            mail to: 'syednaveedmohammed@gmail.com',
+            mail to: 'syed.naveed@iiitb.ac.in',
                     subject: "Build FAILED: ${currentBuild.fullDisplayName}",
                     body: "Result: ${currentBuild.currentResult}\nDetails: ${env.BUILD_URL}"
         }
