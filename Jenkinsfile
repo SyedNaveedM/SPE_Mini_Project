@@ -44,7 +44,7 @@ pipeline {
                 withCredentials([
                     usernamePassword(
                         credentialsId: 'docker-creds',
-                        usernameVariable: 'DOCK ER_USER',
+                        usernameVariable: 'DOCKER_USER',
                         passwordVariable: 'DOCKER_TOKEN'
                     )
                 ]) {
